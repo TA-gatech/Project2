@@ -5,15 +5,15 @@ import crypt
 
 #checking whether program is running as a root or not.
 if os.getuid()!=0:
-    print "Please, run as root."
+    print("Please, run as root.")
     sys.exit()
 
-uname=raw_input("Enter username : ")
-passwd=raw_input("Enter Password for the "+uname+" : ")
+uname=input("Enter username : ")
+passwd=input("Enter Password for the "+uname+" : ")
 
 flag=0
 
-with open('/etc/shadow','r') as fp:	
+with open('/etc/shadow','r') as fp:
     arr=[]
     for line in fp:                                 #Enumerating through all the enteries in shadow file
         temp=line.split(':')
@@ -23,9 +23,9 @@ with open('/etc/shadow','r') as fp:
             salt=salt_and_pass[2]
             result=crypt.crypt(passwd,'$6$'+salt)   #calculating hash via salt and password entered by user
             if result==temp[1]:                     #comparing generated salt with existing salt entery
-                print "Login successful."     
+                print("Login successful.")
             else:
-                print "Invalid Password"
-	
+                print("Invalid Password")
+
 if flag==0:
-	print "The user does not exist."            #if no user exist
+        print("The user does not exist.")           #if no user exist
