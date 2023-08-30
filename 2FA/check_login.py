@@ -1,31 +1,43 @@
-import os, subprocess
+import os
 import sys
-import crypt
+from passlib.hash import sha512_crypt
 
+def check_root_privileges():
+    """Check if the program is running with root privileges."""
+    if os.getuid() != 0:
+        print("Please run as root.")
+        sys.exit()
 
-#checking whether program is running as a root or not.
-if os.getuid()!=0:
-    print("Please, run as root.")
-    sys.exit()
+def get_user_credentials():
+    """Get username and password from the user."""
+    uname = input("Enter username: ")
+    password = input(f"Enter Password for {uname}: ")
+    return uname, password
 
-uname=input("Enter username : ")
-passwd=input("Enter Password for the "+uname+" : ")
+def authenticate_user(uname, password):
+    """Authenticate the user."""
+    with open('/etc/shadow', 'r') as fp:
+        for line in fp:
+            temp = line.split(':')
+            if temp[0] == uname:
+                salt_and_pass = temp[1].split('$')
+                salt = salt_and_pass[2]
+                # Calculate hash using the retrieved salt and the password
+                calculated_hash = sha512_crypt.hash(password, salt_size=8, salt=salt, rounds=5000)
+                if calculated_hash == temp[1]:
+                    return True
+                else:
+                    return False
+    return False
 
-flag=0
+def main():
+    check_root_privileges()
+    uname, password = get_user_credentials()
 
-with open('/etc/shadow','r') as fp:
-    arr=[]
-    for line in fp:                                 #Enumerating through all the enteries in shadow file
-        temp=line.split(':')
-        if temp[0]==uname:                          #checking whether entered username exist or not
-            flag=1
-            salt_and_pass=(temp[1].split('$'))      #retrieving salt against the user
-            salt=salt_and_pass[2]
-            result=crypt.crypt(passwd,'$6$'+salt)   #calculating hash via salt and password entered by user
-            if result==temp[1]:                     #comparing generated salt with existing salt entery
-                print("Login successful.")
-            else:
-                print("Invalid Password")
+    if authenticate_user(uname, password):
+        print("Login successful.")
+    else:
+        print("Invalid Password or User does not exist.")
 
-if flag==0:
-        print("The user does not exist.")           #if no user exist
+if __name__ == '__main__':
+    main()
