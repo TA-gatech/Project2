@@ -2,4 +2,4 @@
 
 ## Install the missing software 
 
-pip install passlib --break-system-packages  
+sudo apt install python3-passlib -y
