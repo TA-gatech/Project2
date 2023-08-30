@@ -2,17 +2,20 @@ import os
 import sys
 from passlib.hash import sha512_crypt
 
+
 def check_root_privileges():
     """Check if the program is running with root privileges."""
     if os.getuid() != 0:
         print("Please run as root.")
         sys.exit()
 
+
 def get_user_credentials():
     """Get username and password from the user."""
     uname = input("Enter username: ")
     password = input(f"Enter Password for {uname}: ")
     return uname, password
+
 
 def authenticate_user(uname, password):
     """Authenticate the user."""
@@ -30,6 +33,7 @@ def authenticate_user(uname, password):
                     return False
     return False
 
+
 def main():
     check_root_privileges()
     uname, password = get_user_credentials()
@@ -38,6 +42,7 @@ def main():
         print("Login successful.")
     else:
         print("Invalid Password or User does not exist.")
+
 
 if __name__ == '__main__':
     main()
