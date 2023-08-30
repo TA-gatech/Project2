@@ -14,7 +14,7 @@ def get_valid_salt():
         if re.match(r"^[a-z0-9]{8}$", user_input):
             return user_input
         else:
-            print("Invalid salt. Please enter exactly 8 lowercase letters and digits.")
+            print("Invalid salt. Please enter exactly 8 lowercase letters or digits.")
             retry = input("Do you want to retry? (yes/no): ")
             if retry.lower() != "yes":
                 sys.exit("Exiting.")
@@ -27,6 +27,7 @@ def user_exists(username):
     return False
 
 def update_shadow_file(username, password_hash):
+    # Making hash entry in the shadow file
     shadow_line = f"{username}:{password_hash}:17710:0:99999:7:::"
     with open(SHADOW_FILE, 'a+') as shadow_file:
         shadow_file.write(shadow_line + '\n')
@@ -38,6 +39,9 @@ def create_home_directory(username):
         print("Directory: /home/" + username + " already exists")
 
 def update_passwd_file(username):
+    # Making user entry in the passwd file
+    
+    # Count is the default user ID number in our system
     count = 1000
 
     with open(PASSWD_FILE, 'r') as f:
@@ -68,6 +72,7 @@ def create_user(username):
     password = get_input("Enter Password for the user", "password")
     re_password = get_input("Re-enter Password for the user", "password")
 
+    # Just making sure you know what you are entering in password
     if password != re_password:
         print("Passwords do not match")
         sys.exit()
@@ -81,6 +86,7 @@ def create_user(username):
 
 
 if __name__ == '__main__':
+    # Checking whether the program is running as a root or not.
     if os.getuid() != 0:
         print("Please, run as root.")
         sys.exit()
