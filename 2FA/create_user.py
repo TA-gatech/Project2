@@ -1,64 +1,90 @@
-import os, subprocess
+import os
 import sys
-from base64 import b64encode
-import crypt
-from passlib.hash import pbkdf2_sha256
+import re
+from passlib.hash import sha512_crypt
 
+# Constants for file paths
+SHADOW_FILE = '/etc/shadow'
+PASSWD_FILE = '/etc/passwd'
+
+def get_valid_salt():
+    while True:
+        user_input = input("Enter an 8-character salt (lowercase letters and digits): ")
+
+        if re.match(r"^[a-z0-9]{8}$", user_input):
+            return user_input
+        else:
+            print("Invalid salt. Please enter exactly 8 lowercase letters and digits.")
+            retry = input("Do you want to retry? (yes/no): ")
+            if retry.lower() != "yes":
+                sys.exit("Exiting.")
+
+def user_exists(username):
+    with open(SHADOW_FILE, 'r') as fp:
+        for line in fp:
+            if line.startswith(username + ":"):
+                return True
+    return False
+
+def update_shadow_file(username, password_hash):
+    shadow_line = f"{username}:{password_hash}:17710:0:99999:7:::"
+    with open(SHADOW_FILE, 'a+') as shadow_file:
+        shadow_file.write(shadow_line + '\n')
+
+def create_home_directory(username):
+    try:
+        os.mkdir("/home/" + username)
+    except FileExistsError:
+        print("Directory: /home/" + username + " already exists")
+
+def update_passwd_file(username):
+    count = 1000
+
+    with open(PASSWD_FILE, 'r') as f:
+        for line in f:
+            temp1 = line.split(':')
+            while int(temp1[3]) >= count and int(temp1[3]) < 65534:
+                count = int(temp1[3]) + 1
+    count = str(count)
+
+    passwd_line = f"{username}:x:{count}:{count}:,,,:/home/{username}:/bin/bash"
+
+    with open(PASSWD_FILE, 'a+') as passwd_file:
+        passwd_file.write(passwd_line + '\n')
+
+def get_input(prompt, default=None):
+    if default is not None:
+        prompt += f" (or press Enter for {default}) : "
+    response = input(prompt)
+    if not response:
+        return default
+    return response
 
 def create_user(username):
-    with open('shadow', 'r') as fp:  # Opening shadow file in read mode
-        arr = []
-        for line in fp:  # Enumerating through all the entries in shadow file
-            temp = line.split(':')
-            if temp[0] == username:  # checking whether entered username exist or not
-                print("The user already exist. Try deleting it first.")
-                sys.exit()
+    if user_exists(username):
+        print("The user already exists. Try deleting it first.")
+        sys.exit()
 
-    passwd = input("Enter Password for the user: " or "password")
-    re_passwd = input("Re-enter Password for the user: " or "password")
+    password = get_input("Enter Password for the user", "password")
+    re_password = get_input("Re-enter Password for the user", "password")
 
-    # just making sure you know what you are entering in password
-    if passwd != re_passwd:
+    if password != re_password:
         print("Passwords do not match")
         sys.exit()
 
-    rand1 = os.urandom(6)
-    salt = str(b64encode(rand1).decode('utf-8'))  # generating salt, eight characters long
+    salt = get_valid_salt()
+    password_hash = sha512_crypt.hash(password, salt_size=8, salt=salt, rounds=5000)
 
-    hash = crypt.crypt(passwd, '$6$' + salt)  # generating hash
-    line = username + ':' + hash + ":17710:0:99999:7:::"
-    file1 = open("/etc/shadow", "a+")  # Opening shadow file in append+ mode
-    file1.write(line + '\n')  # Making hash entry in the shadow file
-    try:
-        os.mkdir("/home/" + username)  # Making home file for the user
-    except:
-        print("Directory: /home/" + username + " already exist")
-    file2 = open("/etc/passwd", "a+")  # Opening passwd file in append+ mode
-
-    count = 1000
-
-    with open('/etc/passwd', 'r') as f:  # Opening passwd file in read mode
-        arr1 = []
-        for line in f:
-            temp1 = line.split(':')
-            # checking number of existing UID
-            while (int(temp1[3]) >= count and int(temp1[3]) < 65534):
-                count = int(temp1[3]) + 1  # assigning new uid = 1000+number of UIDs +1
-
-    count = str(count)
-    str1 = username + ':x:' + count + ':' + count + ':,,,:/home/' + username + ':/bin/bash'
-    file2.write(str1 + '\n')  # creating entry in passwd file for new user
-    file2.close()
-    file1.close()
+    update_passwd_file(username)
+    update_shadow_file(username, password_hash)
+    create_home_directory(username)
 
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    # checking whether program is running as a root or not.
-    # if os.getuid() != 0:
-    #     print("Please, run as root.")
-    #     sys.exit()
+    if os.getuid() != 0:
+        print("Please, run as root.")
+        sys.exit()
 
-    uname = input("Enter Username you want to add: " or "username")
-
+    uname = get_input("Enter Username you want to add", "username")
     create_user(uname)
+
