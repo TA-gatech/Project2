@@ -22,10 +22,6 @@ class User:
         return False
 
 
-# Constants for file paths
-PASSWD_FILE = '/etc/passwd'
-
-
 def check_root_privileges():
     """Check if the program is running with root privileges."""
     if os.getuid() != 0:
