@@ -100,8 +100,13 @@ def check_root_privileges():
 
 
 def request_valid_salt():
+    # Be aware that using a default salt for cryptographic purposes is not as secure as using a randomly
+    # generated one. It's generally recommended to use a random salt for each user to enhance
+    # the security of password hashing.
+    # In our assignment we request the salt from the user for grading purposes.
+
     while True:
-        user_input = input("Enter an 8-character salt (lowercase letters and digits): ")
+        user_input = request_input("Enter an 8-character salt (lowercase letters and digits)", "saltsalt")
 
         if re.match(r"^[a-z0-9]{8}$", user_input):
             return user_input
