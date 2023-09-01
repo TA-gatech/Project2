@@ -3,6 +3,29 @@ import sys
 from passlib.hash import sha512_crypt
 
 
+class User:
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+
+    def authenticate(self):
+        """Authenticate the user."""
+        with open('/etc/shadow', 'r') as fp:
+            for line in fp:
+                temp = line.split(':')
+                if temp[0] == self.username:
+                    salt_and_pass = temp[1].split('$')
+                    salt = salt_and_pass[2]
+                    # Calculate hash using the retrieved salt and the password
+                    calculated_hash = sha512_crypt.hash(self.password, salt_size=8, salt=salt, rounds=5000)
+                    return calculated_hash == temp[1]
+        return False
+
+
+# Constants for file paths
+PASSWD_FILE = '/etc/passwd'
+
+
 def check_root_privileges():
     """Check if the program is running with root privileges."""
     if os.getuid() != 0:
@@ -17,28 +40,13 @@ def get_user_credentials():
     return uname, password
 
 
-def authenticate_user(uname, password):
-    """Authenticate the user."""
-    with open('/etc/shadow', 'r') as fp:
-        for line in fp:
-            temp = line.split(':')
-            if temp[0] == uname:
-                salt_and_pass = temp[1].split('$')
-                salt = salt_and_pass[2]
-                # Calculate hash using the retrieved salt and the password
-                calculated_hash = sha512_crypt.hash(password, salt_size=8, salt=salt, rounds=5000)
-                if calculated_hash == temp[1]:
-                    return True
-                else:
-                    return False
-    return False
-
-
 def main():
     check_root_privileges()
     uname, password = get_user_credentials()
 
-    if authenticate_user(uname, password):
+    user = User(uname, password)
+
+    if user.authenticate():
         print("Login successful.")
     else:
         print("Invalid Password or User does not exist.")
