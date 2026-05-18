@@ -20,14 +20,12 @@ class User:
         # Add the user to the OS
         self.update_passwd_file()
         self.update_shadow_file()
-        self.create_home_directory()
-
 
     def get_hashed_password(self):
         return self.hashed_password
 
     def set_hashed_password(self, password, salt):
-        self.self.hashed_password = sha512_crypt.hash(password, salt_size=8, salt=salt, rounds=5000)
+        self.hashed_password = sha512_crypt.hash(password, salt_size=8, salt=salt, rounds=5000)
 
     def get_username(self):
         return self.username
@@ -76,13 +74,6 @@ class User:
         with open(SHADOW_FILE, 'a+') as shadow_file:
             shadow_file.write(shadow_line + '\n')
 
-    def create_home_directory(self):
-        try:
-            pass
-            #os.mkdir("/home/" + self.username)
-        except FileExistsError:
-            print("Directory: /home/" + self.username + " already exists")
-
     def __str__(self):
         return (f"Username:\t{self.username}\nPassword:\t{self.password}\nSalt:\t\t{self.salt}\n"
                 f"Hash:\t\t{self.hashed_password}")
@@ -91,14 +82,6 @@ class User:
 # Constants for file paths
 SHADOW_FILE = './app/shadow'
 PASSWD_FILE = './app/passwd'
-
-
-def check_root_privileges():
-    """Check if the program is running with root privileges."""
-    if os.getuid() != 0:
-        print("Please run as root.")
-        #sys.exit()
-
 
 def request_valid_salt():
     # Be aware that using a default salt for cryptographic purposes is not as secure as using a randomly
@@ -128,8 +111,6 @@ def request_input(prompt, default=None):
 
 
 def main():
-    # Verify that the code is executed by superuser.
-    check_root_privileges()
     
     # Request input: username
     uname = request_input("Enter Username you want to add", "username")
