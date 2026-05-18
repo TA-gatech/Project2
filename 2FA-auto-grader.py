@@ -13,26 +13,26 @@ PASSWORD_FILE = "/etc/passwd"
 SHADOW_FILE = "/etc/shadow"
 
 GRADE = {
-    "TC2": 7.5,   # Create User 1 it should succeed
-    "TC3": 7.5,   # Create User 2 it should succeed
-    "TC4": 5,     # Create duplicate user, it should fail.
-    "TC5": 15,    # Login with user 1 with correct credentials, it should succeed
-    "TC6": 5,     # Login with user 2 with incorrect credentials, it should fail
-    "TC7": 10,    # Update user 2 with correct credentials, it should succeed
-    "TC8": 5,     # Update user 1 with incorrect credentials, it should fail
-    "TC9": 7.5,   # Delete User 1
-    "TC10": 7.5,  # Delete User 2
+    "TC2": 8,   # Create User 1 it should succeed
+    "TC3": 8,   # Create User 2 it should succeed
+    "TC4": 6,     # Create duplicate user, it should fail.
+    "TC5": 16,    # Login with user 1 with correct credentials, it should succeed
+    "TC6": 6,     # Login with user 2 with incorrect credentials, it should fail
+    "TC7": 13,    # Update user 2 with correct credentials, it should succeed
+    "TC8": 6,     # Update user 1 with incorrect credentials, it should fail
+    "TC9": 12,   # Delete User 1
+    "TC10": 5,  # Delete User 2 with incorrect credentials
 }
 PERFECT_GRADE = {
-    "TC2": 7.5,   # Create User 1 it should succeed
-    "TC3": 7.5,   # Create User 2 it should succeed
-    "TC4": 5,     # Create duplicate user, it should fail.
-    "TC5": 15,    # Login with user 1 with correct credentials, it should succeed
-    "TC6": 5,     # Login with user 2 with incorrect credentials, it should fail
-    "TC7": 10,    # Update user 2 with correct credentials, it should succeed
-    "TC8": 5,     # Update user 1 with incorrect credentials, it should fail
-    "TC9": 7.5,   # Delete User 1
-    "TC10": 7.5,  # Delete User 2
+    "TC2": 8,   # Create User 1 it should succeed
+    "TC3": 8,   # Create User 2 it should succeed
+    "TC4": 6,     # Create duplicate user, it should fail.
+    "TC5": 16,    # Login with user 1 with correct credentials, it should succeed
+    "TC6": 6,     # Login with user 2 with incorrect credentials, it should fail
+    "TC7": 13,    # Update user 2 with correct credentials, it should succeed
+    "TC8": 6,     # Update user 1 with incorrect credentials, it should fail
+    "TC9": 12,   # Delete User 1, it should succeed
+    "TC10": 5,  # Delete User 2 with incorrect credentials, it should failed
 }
 TASK_COMMENT = {
     "TC2": 'User 1 created successfully',   # Create User 1
@@ -42,8 +42,8 @@ TASK_COMMENT = {
     "TC6": 'Failed to log with user 2 (success)',   # Login with user 2 with incorrect credentials, it should fail
     "TC7": 'Updated User 2 Successfully',   # Update user 2 with correct credentials, it should succeed
     "TC8": 'Failed to update user 1 (success)',   # Update with user 1 with incorrect credentials, it should fail
-    "TC9": 'Deleted user 1',   # Delete User 1
-    "TC10": 'Deleted user 2',  # Delete User 2
+    "TC9": 'Deleted user 1',   # Delete User 1, it should succeed
+    "TC10": 'Deleted user 2',  # Delete User 2 with incorrect credentials, it should failed
 }
 
 def main():
@@ -85,7 +85,7 @@ def main():
     result = check_create_new_user_result(user1_username, user1_password1 + user1_token1)
     if result:
         print(f'\033[32mCreation of user {user1_username} successful\033[0m')
-        GRADE['TC2'] = 7.5
+        GRADE['TC2'] = 8
     else:
         print("Invalid Password or User Does Not Exist")
         GRADE['TC2'] = 0
@@ -99,7 +99,7 @@ def main():
     result = check_create_new_user_result(user2_username, user2_password1 + user2_token1)
     if result:
         print(f'\033[32mCreation of user {user2_username} successful\033[0m')
-        GRADE['TC3'] = 7.5
+        GRADE['TC3'] = 8
     else:
         print("Invalid Password or User Does Not Exist")
         GRADE['TC3'] = 0
@@ -117,7 +117,7 @@ def main():
         TASK_COMMENT['TC3'] = 'Failed test to create a duplicate user'
     else:
         print(f'\033[32mUser {user2_username} not duplicated in password file.\033[0m')
-        GRADE['TC4'] = 5
+        GRADE['TC4'] = 6
     ####################################################################################
     # Log with User 1 (TC5) - Success Expected (valid credentials)
     print("Login Test - User 1")
@@ -127,7 +127,7 @@ def main():
     result = check_create_new_user_result(user1_username, user1_password1 + user1_token2)
     if result:
         print(f'\033[32mUser {user1_username} logged successfully.\033[0m')
-        GRADE['TC5'] = 15
+        GRADE['TC5'] = 16
     else:
         print(f'User {user1_username} failed login.')
         GRADE['TC5'] = 0
@@ -145,7 +145,7 @@ def main():
         TASK_COMMENT['TC6'] = 'Failed to fail to login user 2 using the wrong credentials'
     else:
         print(f'\033[32mUser {user2_username} failed login.\033[0m')
-        GRADE['TC6'] = 5
+        GRADE['TC6'] = 6
 ####################################################################################
     # Update User 2 (TC7) - Success expected (valid credentials)
     print(f'Update User 2 test with valid credentials')
@@ -155,7 +155,7 @@ def main():
     result = check_create_new_user_result(user2_username, user2_password2 + user2_token2)
     if result:
         print(f'\033[32mUser {user2_username} updated successfully.\033[0m')
-        GRADE['TC7'] = 10
+        GRADE['TC7'] = 13
     else:
         GRADE['TC7'] = 0
         print(f'\033[31mUser {user2_username} failed to update.\033[0m')
@@ -173,7 +173,7 @@ def main():
         TASK_COMMENT['TC8'] = 'Failed to fail updating user 1'
     else:
         print(f'\033[32mUser {user1_username} failed to update.\033[0m')
-        GRADE['TC8'] = 5
+        GRADE['TC8'] = 6
 ####################################################################################
     # Delete User 1 (TC9)  - Success expected
     print("Delete User Test - User 1")
@@ -186,20 +186,20 @@ def main():
         TASK_COMMENT['TC9'] = 'Failed to delete user 1'
     else:
         print(f'\033[32mUser {user1_username} deleted successfully.\033[0m')
-        GRADE['TC9'] = 7.5
+        GRADE['TC9'] = 12
 ####################################################################################
-    # Delete User 2 (TC10)  - Success expected
+    # Delete User 2 (TC10)  - Fail expected
     print("Delete User Test - User 2")
     client = start_client(file)
-    delete_user(client, user2_username, user2_password2, user2_token2)
+    delete_user(client, user2_username, "wrong-password", user2_token2)
     time.sleep(2)
-    if user_exists_passwd_file(user2_username) or user_exists_shadow_file(user2_username):
-        print(f'\033[31mUser {user2_username} exists in passwd or shadow file.\033[0m')
+    if not (user_exists_passwd_file(user2_username) or user_exists_shadow_file(user2_username)):
+        print(f'\033[31mUser {user2_username} deleted successfully with incorrect credentials.\033[0m')
         GRADE['TC10'] = 0
-        TASK_COMMENT['TC10'] = 'Failed to delete user 2'
+        TASK_COMMENT['TC10'] = 'Succeeded to delete user 2'
     else:
-        print(f'\033[32mUser {user2_username} deleted successfully.\033[0m')
-        GRADE['TC10'] = 7.5
+        print(f'\033[32mUser {user2_username} delete failed.\033[0m')
+        GRADE['TC10'] = 5
 ####################################################################################
 
 ####################################################################################
@@ -289,51 +289,51 @@ def check_create_new_user_result(uname, passwd):
 def imprime_grade():
     """
     GRADE = {
-    "TC2": 7.5,   # Create User 1 it should succeed
-    "TC3": 7.5,   # Create User 2 it should succeed
-    "TC4": 5,     # Create duplicate user, it should fail.
-    "TC5": 15,    # Login with user 1 with correct credentials, it should succeed
-    "TC6": 5,     # Login with user 2 with incorrect credentials, it should fail
-    "TC7": 10,    # Update user 2 with correct credentials, it should succeed
-    "TC8": 5,     # Update user 1 with incorrect credentials, it should fail
-    "TC9": 7.5,   # Delete User 1
-    "TC10": 7.5,  # Delete User 2
+    "TC2": 8,   # Create User 1 it should succeed
+    "TC3": 8,   # Create User 2 it should succeed
+    "TC4": 6,     # Create duplicate user, it should fail.
+    "TC5": 16,    # Login with user 1 with correct credentials, it should succeed
+    "TC6": 6,     # Login with user 2 with incorrect credentials, it should fail
+    "TC7": 13,    # Update user 2 with correct credentials, it should succeed
+    "TC8": 6,     # Update user 1 with incorrect credentials, it should fail
+    "TC9": 12,   # Delete User 1 with correct credentials, it should succeed
+    "TC10": 5,  # Delete User 2 with incorrect credentials, it should fail
     }
     :return: N/A
     """
-    if GRADE["TC2"] == 7.5:
+    if GRADE["TC2"] == 8:
         print(f'\033[32mTC2: {GRADE["TC2"]}\033[0m')
     else:
         print(f'\033[31mTC2: {GRADE["TC2"]}\033[0m')
-    if GRADE["TC3"] == 7.5:
+    if GRADE["TC3"] == 8:
         print(f'\033[32mTC3: {GRADE["TC3"]}\033[0m')
     else:
         print(f'\033[31mTC3: {GRADE["TC3"]}\033[0m')
-    if GRADE["TC4"] == 5:
+    if GRADE["TC4"] == 6:
         print(f'\033[32mTC4: {GRADE["TC4"]}\033[0m')
     else:
         print(f'\033[31mTC4: {GRADE["TC4"]}\033[0m')
-    if GRADE["TC5"] == 15:
+    if GRADE["TC5"] == 16:
         print(f'\033[32mTC5: {GRADE["TC5"]}\033[0m')
     else:
         print(f'\033[31mTC5: {GRADE["TC5"]}\033[0m')
-    if GRADE["TC6"] == 5:
+    if GRADE["TC6"] == 6:
         print(f'\033[32mTC6: {GRADE["TC6"]}\033[0m')
     else:
         print(f'\033[31mTC6: {GRADE["TC6"]}\033[0m')
-    if GRADE["TC7"] == 10:
+    if GRADE["TC7"] == 13:
         print(f'\033[32mTC7: {GRADE["TC7"]}\033[0m')
     else:
         print(f'\033[31mTC7: {GRADE["TC7"]}\033[0m')
-    if GRADE["TC8"] == 5:
+    if GRADE["TC8"] == 6:
         print(f'\033[32mTC8: {GRADE["TC8"]}\033[0m')
     else:
         print(f'\033[31mTC8: {GRADE["TC8"]}\033[0m')
-    if GRADE["TC9"] == 7.5:
+    if GRADE["TC9"] == 12:
         print(f'\033[32mTC9: {GRADE["TC9"]}\033[0m')
     else:
         print(f'\033[31mTC9: {GRADE["TC9"]}\033[0m')
-    if GRADE["TC10"] == 7.5:
+    if GRADE["TC10"] == 5:
         print(f'\033[32mTC10: {GRADE["TC10"]}\033[0m')
     else:
         print(f'\033[31mTC10: {GRADE["TC10"]}\033[0m')

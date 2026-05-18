@@ -78,7 +78,8 @@ class User:
 
     def create_home_directory(self):
         try:
-            os.mkdir("/home/" + self.username)
+            pass
+            #os.mkdir("/home/" + self.username)
         except FileExistsError:
             print("Directory: /home/" + self.username + " already exists")
 
@@ -88,15 +89,15 @@ class User:
 
 
 # Constants for file paths
-SHADOW_FILE = '/etc/shadow'
-PASSWD_FILE = '/etc/passwd'
+SHADOW_FILE = './app/shadow'
+PASSWD_FILE = './app/passwd'
 
 
 def check_root_privileges():
     """Check if the program is running with root privileges."""
     if os.getuid() != 0:
         print("Please run as root.")
-        sys.exit()
+        #sys.exit()
 
 
 def request_valid_salt():

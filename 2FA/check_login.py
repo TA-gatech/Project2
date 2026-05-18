@@ -10,7 +10,7 @@ class User:
 
     def authenticate(self):
         """Authenticate the user."""
-        with open('/etc/shadow', 'r') as fp:
+        with open('./app/shadow', 'r') as fp:
             for line in fp:
                 temp = line.split(':')
                 if temp[0] == self.username:
@@ -21,14 +21,6 @@ class User:
                     return calculated_hash == temp[1]
         return False
 
-
-def check_root_privileges():
-    """Check if the program is running with root privileges."""
-    if os.getuid() != 0:
-        print("Please run as root.")
-        sys.exit()
-
-
 def get_user_credentials():
     """Get username and password from the user."""
     uname = input("Enter username: ")
@@ -37,7 +29,6 @@ def get_user_credentials():
 
 
 def main():
-    check_root_privileges()
     uname, password = get_user_credentials()
 
     user = User(uname, password)
