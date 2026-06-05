@@ -9,8 +9,8 @@ import os
 # FNULL = open(os.devnull, "w")
 FNULL = open("debug.log", "a")
 
-SHADOW_FILE = './app/shadow'
-PASSWD_FILE = './app/passwd'
+SHADOW_FILE = './2FA/app/shadow'
+PASSWD_FILE = './2FA/app/passwd'
 
 GRADE = {
     "TC2": 8,   # Create User 1 it should succeed
@@ -47,11 +47,6 @@ TASK_COMMENT = {
 }
 
 def main():
-    # Checking whether program is running as a root or not.
-    if os.getuid() != 0:
-        print("Please, run as root.")
-        sys.exit()
-
     # TODO: Change the name of you 2FA python code (if needed)
     file = "2FA.py"  # This is your code
     print("The 2FA Python File file name is:\t", file)
