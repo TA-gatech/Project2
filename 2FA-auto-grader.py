@@ -9,8 +9,8 @@ import os
 # FNULL = open(os.devnull, "w")
 FNULL = open("debug.log", "a")
 
-PASSWORD_FILE = "/etc/passwd"
-SHADOW_FILE = "/etc/shadow"
+SHADOW_FILE = './app/shadow'
+PASSWD_FILE = './app/passwd'
 
 GRADE = {
     "TC2": 8,   # Create User 1 it should succeed
