@@ -10,7 +10,7 @@ import os
 FNULL = open("debug.log", "a")
 
 SHADOW_FILE = './2FA/app/shadow'
-PASSWD_FILE = './2FA/app/passwd'
+PASSWORD_FILE = './2FA/app/passwd'
 
 GRADE = {
     "TC2": 8,   # Create User 1 it should succeed
